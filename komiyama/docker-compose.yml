@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    environment:
+      - CASSANDRA_CLUSTER_NAME=komiyama
+      - CASSANDRA_NUM_TOKENS=256
+    ports:
+      - "9042:9042"   # CQL ポート
+    volumes:
+      - ./cassandra-data:/var/lib/cassandra
+    networks:
+      - cassandra-net
+
+networks:
+  cassandra-net:
+    driver: bridge
