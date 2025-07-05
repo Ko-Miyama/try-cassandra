@@ -1,2 +1,2 @@
 # try-cassandra
-komichan $ mita
+komichan & mita
