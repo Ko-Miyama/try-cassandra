@@ -12,6 +12,33 @@ services:
       - ./cassandra-data:/var/lib/cassandra
     networks:
       - cassandra-net
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "SELECT now() FROM system.local"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  cassandra-init:
+    image: cassandra:latest
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    volumes:
+      - ./init-cassandra.sh:/init-cassandra.sh
+    entrypoint: ["/bin/bash", "/init-cassandra.sh"]
+    networks:
+      - cassandra-net
+
+  go-app:
+    build: ./go-app
+    container_name: go-app
+    depends_on:
+      cassandra-init:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+    networks:
+      - cassandra-net
 
 networks:
   cassandra-net:
